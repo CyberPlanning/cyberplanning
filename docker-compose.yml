@@ -16,12 +16,14 @@ services:
   server:
     build: ./apiserver
     image: cps:latest
+    volumes:
+      - ./prod.cfg:/usr/src/app/cyberapi/prod.cfg
     depends_on:
       - mongo
     networks:
       - cyberplanning
     environment:
-      - "CYBERPLANNING_SETTINGS=../config/prod.cfg"
+      - "CYBERPLANNING_SETTINGS=prod.cfg"
       - "FLASK_DEBUG=False"
 
     ports:
