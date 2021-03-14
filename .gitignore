@@ -1,0 +1,8 @@
+.vscode/
+
+apiserver/
+updater/
+webclient/
+
+params.json
+mongo/

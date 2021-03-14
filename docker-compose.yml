@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  updater:
+    build: ./updater
+    image: cpu:latest
+    volumes:
+      - ./params.json:/usr/src/app/params.json
+    environment:
+      - "PYTHONUNBUFFERED=1"
+    depends_on:
+      - mongo
+    networks:
+      - cyberplanning
+
+  server:
+    build: ./apiserver
+    image: cps:latest
+    depends_on:
+      - mongo
+    networks:
+      - cyberplanning
+    environment:
+      - "CYBERPLANNING_SETTINGS=../config/prod.cfg"
+      - "FLASK_DEBUG=False"
+
+    ports:
+      - "127.0.0.1:3001:3001"
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - "./mongo:/data/db"
+    networks:
+      - cyberplanning
+
+  web:
+    image: nginx:latest
+    volumes:
+      - ./nginx_templates/cyberplanning.fr.conf:/etc/nginx/conf.d/default.conf
+      - ./webclient/build:/usr/share/cyberplanning/webclient/build
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - server
+    networks:
+      - cyberplanning
+
+networks:
+  cyberplanning:
